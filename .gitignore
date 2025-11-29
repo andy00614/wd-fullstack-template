@@ -42,8 +42,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# idea files
+# ide/editor
 .idea
+.claude/
 
 # playwright
 /test-results/

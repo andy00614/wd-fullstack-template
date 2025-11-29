@@ -20,7 +20,8 @@
 		"typecheck": "tsc --noEmit",
 		"knip": "knip",
 		"e2e": "playwright test",
-		"e2e:ui": "playwright test --ui"
+		"e2e:ui": "playwright test --ui",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"@supabase/ssr": "^0.8.0",
@@ -42,7 +43,9 @@
 		"@types/react-dom": "^19.0.0",
 		"dotenv": "^17.2.3",
 		"drizzle-kit": "^0.31.7",
+		"husky": "^9.1.7",
 		"knip": "^5.70.2",
+		"lint-staged": "^16.2.7",
 		"postcss": "^8.5.3",
 		"tailwindcss": "^4.0.15",
 		"typescript": "^5.8.2",
@@ -50,5 +53,10 @@
 	},
 	"ct3aMetadata": {
 		"initVersion": "7.40.0"
+	},
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx}": [
+			"biome check --write"
+		]
 	}
 }

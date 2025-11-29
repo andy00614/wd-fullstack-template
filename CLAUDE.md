@@ -27,3 +27,16 @@
 
 - Don't unnecessarily add `try`/`catch`
 - Don't cast to `any`
+
+## Code Quality Checks
+
+After making code changes, run these commands to verify quality:
+
+```bash
+bun run check          # Biome lint/format
+bun run typecheck      # TypeScript type check
+bun run test:run       # Unit tests
+bun run e2e
+```
+
+Never use `--no-verify` when committing. Pre-commit hooks exist to catch issues early.

@@ -1,6 +1,9 @@
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -29,16 +32,13 @@ export default async function PostsPage() {
 				<div className="mb-8 flex items-center justify-between">
 					<div className="flex items-center gap-4">
 						<h1 className="font-bold text-3xl">My Posts</h1>
-						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-blue-300 text-sm">
+						<Badge className="bg-blue-500/20 text-blue-300">
 							Query: {queryDuration}ms
-						</span>
+						</Badge>
 					</div>
-					<Link
-						className="rounded-full bg-white/10 px-6 py-2 font-semibold transition hover:bg-white/20"
-						href="/"
-					>
-						Back
-					</Link>
+					<Button asChild variant="ghost">
+						<Link href="/">Back</Link>
+					</Button>
 				</div>
 
 				<CreatePostForm />
@@ -50,28 +50,31 @@ export default async function PostsPage() {
 						</p>
 					) : (
 						userPosts.map((post) => (
-							<div className="rounded-xl bg-white/10 p-6" key={post.id}>
-								<div className="flex items-start justify-between gap-4">
+							<Card className="border-white/10 bg-white/10" key={post.id}>
+								<CardHeader className="flex-row items-start justify-between gap-4">
 									<div className="flex-1">
-										<h3 className="font-semibold text-xl">{post.title}</h3>
+										<CardTitle className="text-white text-xl">
+											{post.title}
+										</CardTitle>
+									</div>
+									<div className="flex gap-2">
+										<Button asChild size="sm" variant="secondary">
+											<Link href={`/posts/${post.id}/edit`}>Edit</Link>
+										</Button>
+										<DeletePostButton postId={post.id} />
+									</div>
+								</CardHeader>
+								{(post.content || post.createdAt) && (
+									<CardContent>
 										{post.content && (
-											<p className="mt-2 text-white/80">{post.content}</p>
+											<p className="text-white/80">{post.content}</p>
 										)}
 										<p className="mt-2 text-sm text-white/50">
 											{post.createdAt.toLocaleDateString()}
 										</p>
-									</div>
-									<div className="flex gap-2">
-										<Link
-											className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20"
-											href={`/posts/${post.id}/edit`}
-										>
-											Edit
-										</Link>
-										<DeletePostButton postId={post.id} />
-									</div>
-								</div>
-							</div>
+									</CardContent>
+								)}
+							</Card>
 						))
 					)}
 				</div>

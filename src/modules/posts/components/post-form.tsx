@@ -1,6 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { createPost, deletePost } from "../actions";
 
 type TimingResult = {
@@ -22,48 +28,61 @@ export function CreatePostForm() {
 	}
 
 	return (
-		<form action={handleSubmit} className="mb-8 rounded-xl bg-white/10 p-6">
-			<div className="mb-4 flex items-center justify-between">
-				<h2 className="font-semibold text-xl">Create New Post</h2>
+		<Card className="mb-8 border-white/10 bg-white/10">
+			<CardHeader className="flex-row items-center justify-between">
+				<CardTitle className="text-white text-xl">Create New Post</CardTitle>
 				{timing && (
-					<div className="flex gap-2 text-sm">
-						<span className="rounded-full bg-green-500/20 px-3 py-1 text-green-300">
+					<div className="flex gap-2">
+						<Badge className="bg-green-500/20 text-green-300">
 							Total: {timing.duration}ms
-						</span>
-						<span className="rounded-full bg-yellow-500/20 px-3 py-1 text-yellow-300">
+						</Badge>
+						<Badge className="bg-yellow-500/20 text-yellow-300">
 							Auth: {timing.authDuration}ms
-						</span>
-						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-blue-300">
+						</Badge>
+						<Badge className="bg-blue-500/20 text-blue-300">
 							DB: {timing.dbDuration}ms
-						</span>
+						</Badge>
 					</div>
 				)}
-			</div>
-			<div className="flex flex-col gap-4">
-				<input
-					className="rounded-lg bg-white/10 px-4 py-2 placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)]"
-					disabled={isPending}
-					name="title"
-					placeholder="Title"
-					required
-					type="text"
-				/>
-				<textarea
-					className="rounded-lg bg-white/10 px-4 py-2 placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)]"
-					disabled={isPending}
-					name="content"
-					placeholder="Content (optional)"
-					rows={3}
-				/>
-				<button
-					className="self-start rounded-full bg-[hsl(280,100%,70%)] px-6 py-2 font-semibold transition hover:bg-[hsl(280,100%,60%)] disabled:opacity-50"
-					disabled={isPending}
-					type="submit"
-				>
-					{isPending ? "Creating..." : "Create Post"}
-				</button>
-			</div>
-		</form>
+			</CardHeader>
+			<CardContent>
+				<form action={handleSubmit} className="flex flex-col gap-4">
+					<div className="space-y-2">
+						<Label className="text-white" htmlFor="title">
+							Title
+						</Label>
+						<Input
+							className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+							disabled={isPending}
+							id="title"
+							name="title"
+							placeholder="Enter post title"
+							required
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label className="text-white" htmlFor="content">
+							Content
+						</Label>
+						<Textarea
+							className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+							disabled={isPending}
+							id="content"
+							name="content"
+							placeholder="Enter post content (optional)"
+							rows={3}
+						/>
+					</div>
+					<Button
+						className="self-start bg-[hsl(280,100%,70%)] hover:bg-[hsl(280,100%,60%)]"
+						disabled={isPending}
+						type="submit"
+					>
+						{isPending ? "Creating..." : "Create Post"}
+					</Button>
+				</form>
+			</CardContent>
+		</Card>
 	);
 }
 
@@ -82,15 +101,18 @@ export function DeletePostButton({ postId }: { postId: string }) {
 
 	return (
 		<div className="flex items-center gap-2">
-			{duration && <span className="text-green-300 text-xs">{duration}ms</span>}
-			<button
-				className="rounded-lg bg-red-500/20 px-4 py-2 text-red-300 text-sm transition hover:bg-red-500/30 disabled:opacity-50"
+			{duration && (
+				<Badge className="bg-green-500/20 text-green-300">{duration}ms</Badge>
+			)}
+			<Button
 				disabled={isPending}
 				onClick={handleDelete}
+				size="sm"
 				type="button"
+				variant="destructive"
 			>
 				{isPending ? "..." : "Delete"}
-			</button>
+			</Button>
 		</div>
 	);
 }

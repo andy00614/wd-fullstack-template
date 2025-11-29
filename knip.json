@@ -1,5 +1,10 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"ignore": ["src/lib/supabase/client.ts", "src/env.js", "drizzle.config.ts", "e2e/**"],
+	"ignore": [
+		"src/lib/supabase/client.ts",
+		"src/env.js",
+		"drizzle.config.ts",
+		"e2e/**"
+	],
 	"drizzle": false
 }

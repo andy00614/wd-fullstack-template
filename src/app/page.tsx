@@ -46,14 +46,14 @@ export default async function Home() {
 						{!user ? (
 							<div className="flex gap-4">
 								<Link
-									href="/login"
 									className="rounded-full bg-[hsl(280,100%,70%)] px-10 py-3 font-semibold no-underline transition hover:bg-[hsl(280,100%,60%)]"
+									href="/login"
 								>
 									Sign in
 								</Link>
 								<Link
-									href="/signup"
 									className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+									href="/signup"
 								>
 									Sign up
 								</Link>
@@ -61,14 +61,14 @@ export default async function Home() {
 						) : (
 							<div className="flex flex-col items-center gap-4">
 								<Link
-									href="/posts"
 									className="rounded-full bg-[hsl(280,100%,70%)] px-10 py-3 font-semibold no-underline transition hover:bg-[hsl(280,100%,60%)]"
+									href="/posts"
 								>
 									View Posts
 								</Link>
 								<Link
-									href="/signout"
 									className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+									href="/signout"
 								>
 									Sign out
 								</Link>

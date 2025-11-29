@@ -21,11 +21,14 @@ export default async function LoginPage() {
 				<LoginForm />
 				<p className="text-white/60">
 					Don't have an account?{" "}
-					<Link href="/signup" className="text-[hsl(280,100%,70%)] hover:underline">
+					<Link
+						className="text-[hsl(280,100%,70%)] hover:underline"
+						href="/signup"
+					>
 						Sign up
 					</Link>
 				</p>
-				<Link href="/" className="text-white/60 hover:text-white">
+				<Link className="text-white/60 hover:text-white" href="/">
 					Back to home
 				</Link>
 			</div>

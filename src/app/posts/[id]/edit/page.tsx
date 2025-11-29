@@ -1,10 +1,9 @@
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
-
+import { createClient } from "@/lib/supabase/server";
 import { db } from "@/server/db";
 import { posts } from "@/server/db/schema";
-import { createClient } from "@/lib/supabase/server";
 import { EditPostForm } from "./edit-form";
 
 export default async function EditPostPage({
@@ -38,7 +37,7 @@ export default async function EditPostPage({
 				<div className="mb-8 flex items-center justify-between">
 					<div className="flex items-center gap-4">
 						<h1 className="font-bold text-3xl">Edit Post</h1>
-						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-sm text-blue-300">
+						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-blue-300 text-sm">
 							Query: {queryDuration}ms
 						</span>
 					</div>

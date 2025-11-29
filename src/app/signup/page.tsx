@@ -21,11 +21,14 @@ export default async function SignupPage() {
 				<SignupForm />
 				<p className="text-white/60">
 					Already have an account?{" "}
-					<Link href="/login" className="text-[hsl(280,100%,70%)] hover:underline">
+					<Link
+						className="text-[hsl(280,100%,70%)] hover:underline"
+						href="/login"
+					>
 						Sign in
 					</Link>
 				</p>
-				<Link href="/" className="text-white/60 hover:text-white">
+				<Link className="text-white/60 hover:text-white" href="/">
 					Back to home
 				</Link>
 			</div>

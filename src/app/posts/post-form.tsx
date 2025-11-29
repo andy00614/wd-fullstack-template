@@ -82,11 +82,9 @@ export function DeletePostButton({ postId }: { postId: string }) {
 
 	return (
 		<div className="flex items-center gap-2">
-			{duration && (
-				<span className="text-xs text-green-300">{duration}ms</span>
-			)}
+			{duration && <span className="text-green-300 text-xs">{duration}ms</span>}
 			<button
-				className="rounded-lg bg-red-500/20 px-4 py-2 text-sm text-red-300 transition hover:bg-red-500/30 disabled:opacity-50"
+				className="rounded-lg bg-red-500/20 px-4 py-2 text-red-300 text-sm transition hover:bg-red-500/30 disabled:opacity-50"
 				disabled={isPending}
 				onClick={handleDelete}
 				type="button"

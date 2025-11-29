@@ -1,12 +1,11 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
-
+import { createClient } from "@/lib/supabase/server";
 import { db } from "@/server/db";
 import { posts } from "@/server/db/schema";
-import { createClient } from "@/lib/supabase/server";
 
 async function getAuthUser() {
 	const supabase = await createClient();
@@ -38,7 +37,9 @@ export async function createPost(formData: FormData) {
 	const dbDuration = performance.now() - dbStart;
 
 	const duration = performance.now() - start;
-	console.log(`[CREATE] Total: ${duration.toFixed(2)}ms | Auth: ${authDuration.toFixed(2)}ms | DB: ${dbDuration.toFixed(2)}ms`);
+	console.log(
+		`[CREATE] Total: ${duration.toFixed(2)}ms | Auth: ${authDuration.toFixed(2)}ms | DB: ${dbDuration.toFixed(2)}ms`,
+	);
 
 	revalidatePath("/posts");
 	return {

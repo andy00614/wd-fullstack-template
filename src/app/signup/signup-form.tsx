@@ -50,9 +50,9 @@ export function SignupForm() {
 				<input
 					className="rounded-lg bg-white/10 px-4 py-3 placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)]"
 					disabled={isPending}
+					minLength={6}
 					name="password"
 					placeholder="Password (min 6 characters)"
-					minLength={6}
 					required
 					type="password"
 				/>

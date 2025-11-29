@@ -46,7 +46,10 @@ export async function signup(formData: FormData) {
 
 	// If session is null but user exists, email confirmation is required
 	if (data.user && !data.session) {
-		return { success: true, message: "Check your email for the confirmation link" };
+		return {
+			success: true,
+			message: "Check your email for the confirmation link",
+		};
 	}
 
 	// If we have a session, user is logged in (email confirmation disabled)

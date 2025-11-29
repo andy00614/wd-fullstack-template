@@ -6,5 +6,7 @@
 		"drizzle.config.ts",
 		"e2e/**"
 	],
+	"ignoreDependencies": ["zustand"],
+	"ignoreExportsUsedInFile": true,
 	"drizzle": false
 }

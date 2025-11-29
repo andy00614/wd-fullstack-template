@@ -1,73 +1,122 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, LogIn, Mail } from "lucide-react";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { login, signInWithGoogle } from "../actions";
+
+const loginSchema = z.object({
+	email: z.email("Please enter a valid email"),
+	password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginForm = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
 	const [isPending, startTransition] = useTransition();
-	const [error, setError] = useState<string | null>(null);
 
-	async function handleSubmit(formData: FormData) {
-		setError(null);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<LoginForm>({
+		resolver: zodResolver(loginSchema),
+	});
+
+	function onSubmit(data: LoginForm) {
 		startTransition(async () => {
+			const formData = new FormData();
+			formData.set("email", data.email);
+			formData.set("password", data.password);
 			const result = await login(formData);
 			if (result?.error) {
-				setError(result.error);
+				toast.error(result.error);
 			}
 		});
 	}
 
-	async function handleGoogleLogin() {
+	function handleGoogleLogin() {
 		startTransition(async () => {
-			await signInWithGoogle();
+			const result = await signInWithGoogle();
+			if (result?.error) {
+				toast.error(result.error);
+			}
 		});
 	}
 
 	return (
 		<div className="flex w-full max-w-sm flex-col gap-4">
-			{error && (
-				<div className="rounded-lg bg-red-500/20 px-4 py-2 text-red-300">
-					{error}
+			<form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+				<div className="space-y-2">
+					<Label className="text-white" htmlFor="email">
+						Email
+					</Label>
+					<Input
+						{...register("email")}
+						className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+						disabled={isPending}
+						id="email"
+						placeholder="you@example.com"
+						type="email"
+					/>
+					{errors.email && (
+						<p className="text-red-400 text-sm">{errors.email.message}</p>
+					)}
 				</div>
-			)}
-			<form action={handleSubmit} className="flex flex-col gap-4">
-				<input
-					className="rounded-lg bg-white/10 px-4 py-3 placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)]"
-					disabled={isPending}
-					name="email"
-					placeholder="Email"
-					required
-					type="email"
-				/>
-				<input
-					className="rounded-lg bg-white/10 px-4 py-3 placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[hsl(280,100%,70%)]"
-					disabled={isPending}
-					name="password"
-					placeholder="Password"
-					required
-					type="password"
-				/>
-				<button
-					className="rounded-full bg-[hsl(280,100%,70%)] px-6 py-3 font-semibold transition hover:bg-[hsl(280,100%,60%)] disabled:opacity-50"
+				<div className="space-y-2">
+					<Label className="text-white" htmlFor="password">
+						Password
+					</Label>
+					<Input
+						{...register("password")}
+						className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+						disabled={isPending}
+						id="password"
+						placeholder="Enter your password"
+						type="password"
+					/>
+					{errors.password && (
+						<p className="text-red-400 text-sm">{errors.password.message}</p>
+					)}
+				</div>
+				<Button
+					className="bg-[hsl(280,100%,70%)] hover:bg-[hsl(280,100%,60%)]"
 					disabled={isPending}
 					type="submit"
 				>
+					{isPending ? (
+						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+					) : (
+						<LogIn className="mr-2 h-4 w-4" />
+					)}
 					{isPending ? "Signing in..." : "Sign in"}
-				</button>
+				</Button>
 			</form>
 			<div className="flex items-center gap-4">
 				<div className="h-px flex-1 bg-white/20" />
 				<span className="text-white/50">or</span>
 				<div className="h-px flex-1 bg-white/20" />
 			</div>
-			<button
-				className="rounded-full bg-white/10 px-6 py-3 font-semibold transition hover:bg-white/20 disabled:opacity-50"
+			<Button
+				className="bg-white/10 hover:bg-white/20"
 				disabled={isPending}
 				onClick={handleGoogleLogin}
 				type="button"
+				variant="ghost"
 			>
+				{isPending ? (
+					<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+				) : (
+					<Mail className="mr-2 h-4 w-4" />
+				)}
 				Sign in with Google
-			</button>
+			</Button>
 		</div>
 	);
 }

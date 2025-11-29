@@ -1,8 +1,18 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+	return twMerge(clsx(inputs));
+}
+
 export function add(a: number, b: number): number {
 	return a + b;
 }
 
-export function formatCurrency(amount: number, currency = "USD"): string {
+export function formatCurrency(
+	amount: number,
+	currency: string = "USD",
+): string {
 	return new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency,

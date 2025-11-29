@@ -29,7 +29,7 @@ test.describe("Posts CRUD Performance", () => {
 			// Extract the timing value
 			const text = await totalBadge.textContent();
 			const match = text?.match(/Total: ([\d.]+)ms/);
-			if (match) {
+			if (match?.[1]) {
 				timings.push(parseFloat(match[1]));
 			}
 

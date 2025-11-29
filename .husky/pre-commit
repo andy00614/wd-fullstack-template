@@ -1,1 +1,7 @@
+#!/bin/sh
+
+# Run lint-staged (format + lint fix)
 bunx lint-staged
+
+# Run typecheck on whole project (will fail commit if types are wrong)
+SKIP_ENV_VALIDATION=1 bun run typecheck

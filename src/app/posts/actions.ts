@@ -51,7 +51,7 @@ export async function createPost(formData: FormData) {
 
 export async function updatePost(formData: FormData) {
 	const start = performance.now();
-	const user = await getAuthUser();
+	await getAuthUser();
 	const id = formData.get("id") as string;
 	const title = formData.get("title") as string;
 	const content = formData.get("content") as string;
@@ -74,7 +74,7 @@ export async function updatePost(formData: FormData) {
 
 export async function deletePost(formData: FormData) {
 	const start = performance.now();
-	const user = await getAuthUser();
+	await getAuthUser();
 	const id = formData.get("id") as string;
 
 	await db.delete(posts).where(eq(posts.id, id));

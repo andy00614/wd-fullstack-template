@@ -6,6 +6,16 @@
 		"useIgnoreFile": true,
 		"clientKind": "git"
 	},
+	"files": {
+		"includes": [
+			"**/*.ts",
+			"**/*.tsx",
+			"**/*.js",
+			"**/*.jsx",
+			"**/*.json",
+			"**/*.css"
+		]
+	},
 	"assist": {
 		"enabled": true,
 		"actions": {
@@ -24,6 +34,9 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"style": {
+				"noNonNullAssertion": "off"
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",

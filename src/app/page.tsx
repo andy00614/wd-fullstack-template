@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
@@ -45,31 +44,20 @@ export default async function Home() {
 							{user && <span>Logged in as {user.email}</span>}
 						</p>
 						{!user ? (
-							<form>
-								<button
-									className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-									formAction={async () => {
-										"use server";
-										const supabase = await createClient();
-										const { data, error } =
-											await supabase.auth.signInWithOAuth({
-												provider: "google",
-												options: {
-													redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`,
-												},
-											});
-										if (error) {
-											throw new Error(error.message);
-										}
-										if (data.url) {
-											redirect(data.url);
-										}
-									}}
-									type="submit"
+							<div className="flex gap-4">
+								<Link
+									href="/login"
+									className="rounded-full bg-[hsl(280,100%,70%)] px-10 py-3 font-semibold no-underline transition hover:bg-[hsl(280,100%,60%)]"
 								>
-									Sign in with Google
-								</button>
-							</form>
+									Sign in
+								</Link>
+								<Link
+									href="/signup"
+									className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+								>
+									Sign up
+								</Link>
+							</div>
 						) : (
 							<div className="flex flex-col items-center gap-4">
 								<Link
@@ -78,20 +66,12 @@ export default async function Home() {
 								>
 									View Posts
 								</Link>
-								<form>
-									<button
-										className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-										formAction={async () => {
-											"use server";
-											const supabase = await createClient();
-											await supabase.auth.signOut();
-											redirect("/");
-										}}
-										type="submit"
-									>
-										Sign out
-									</button>
-								</form>
+								<Link
+									href="/signout"
+									className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+								>
+									Sign out
+								</Link>
 							</div>
 						)}
 					</div>

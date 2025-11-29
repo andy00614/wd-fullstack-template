@@ -1,10 +1,10 @@
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { db } from "@/db";
+import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
-import { db } from "@/server/db";
-import { posts } from "@/server/db/schema";
-import { EditPostForm } from "./edit-form";
+import { EditPostForm } from "@/modules/posts";
 
 export default async function EditPostPage({
 	params,

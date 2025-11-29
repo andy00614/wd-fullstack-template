@@ -3,9 +3,9 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { db } from "@/db";
+import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
-import { db } from "@/server/db";
-import { posts } from "@/server/db/schema";
 
 async function getAuthUser() {
 	const supabase = await createClient();

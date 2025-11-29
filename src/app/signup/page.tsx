@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { SignupForm } from "./signup-form";
+import { SignupForm } from "@/modules/auth";
 
 export default async function SignupPage() {
 	const supabase = await createClient();

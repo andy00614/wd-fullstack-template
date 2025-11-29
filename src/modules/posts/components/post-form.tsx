@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { createPost, deletePost } from "./actions";
+import { createPost, deletePost } from "../actions";
 
 type TimingResult = {
 	duration: string;

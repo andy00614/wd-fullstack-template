@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { signup } from "../login/actions";
+import { signup } from "../actions";
 
 export function SignupForm() {
 	const [isPending, startTransition] = useTransition();

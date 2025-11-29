@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { login, signInWithGoogle } from "./actions";
+import { login, signInWithGoogle } from "../actions";
 
 export function LoginForm() {
 	const [isPending, startTransition] = useTransition();

@@ -1,6 +1,17 @@
 import { eq } from "drizzle-orm";
+import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FadeIn } from "@/components/motion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -26,52 +37,62 @@ export default async function PostsPage() {
 	return (
 		<main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
 			<div className="container mx-auto px-4 py-16">
-				<div className="mb-8 flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<h1 className="font-bold text-3xl">My Posts</h1>
-						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-blue-300 text-sm">
-							Query: {queryDuration}ms
-						</span>
+				<FadeIn>
+					<div className="mb-8 flex items-center justify-between">
+						<div className="flex items-center gap-4">
+							<h1 className="font-bold text-3xl">My Posts</h1>
+							<Badge className="bg-blue-500/20 text-blue-300">
+								Query: {queryDuration}ms
+							</Badge>
+						</div>
+						<Button asChild variant="ghost">
+							<Link href="/">
+								<ArrowLeft className="mr-2 h-4 w-4" />
+								Back
+							</Link>
+						</Button>
 					</div>
-					<Link
-						className="rounded-full bg-white/10 px-6 py-2 font-semibold transition hover:bg-white/20"
-						href="/"
-					>
-						Back
-					</Link>
-				</div>
+				</FadeIn>
 
-				<CreatePostForm />
+				<FadeIn delay={0.1}>
+					<CreatePostForm />
+				</FadeIn>
 
 				<div className="space-y-4">
 					{userPosts.length === 0 ? (
-						<p className="text-center text-white/60">
-							No posts yet. Create your first post above!
-						</p>
+						<FadeIn delay={0.2}>
+							<p className="text-center text-white/60">
+								No posts yet. Create your first post above!
+							</p>
+						</FadeIn>
 					) : (
 						userPosts.map((post) => (
-							<div className="rounded-xl bg-white/10 p-6" key={post.id}>
-								<div className="flex items-start justify-between gap-4">
-									<div className="flex-1">
-										<h3 className="font-semibold text-xl">{post.title}</h3>
+							<Card className="border-white/10 bg-white/10" key={post.id}>
+								<CardHeader>
+									<CardTitle className="text-white text-xl">
+										{post.title}
+									</CardTitle>
+									<CardAction className="flex gap-2">
+										<Button asChild size="sm" variant="secondary">
+											<Link href={`/posts/${post.id}/edit`}>
+												<Pencil className="mr-1 h-3 w-3" />
+												Edit
+											</Link>
+										</Button>
+										<DeletePostButton postId={post.id} />
+									</CardAction>
+								</CardHeader>
+								{(post.content || post.createdAt) && (
+									<CardContent>
 										{post.content && (
-											<p className="mt-2 text-white/80">{post.content}</p>
+											<p className="text-white/80">{post.content}</p>
 										)}
 										<p className="mt-2 text-sm text-white/50">
 											{post.createdAt.toLocaleDateString()}
 										</p>
-									</div>
-									<div className="flex gap-2">
-										<Link
-											className="rounded-lg bg-white/10 px-4 py-2 text-sm transition hover:bg-white/20"
-											href={`/posts/${post.id}/edit`}
-										>
-											Edit
-										</Link>
-										<DeletePostButton postId={post.id} />
-									</div>
-								</div>
-							</div>
+									</CardContent>
+								)}
+							</Card>
 						))
 					)}
 				</div>

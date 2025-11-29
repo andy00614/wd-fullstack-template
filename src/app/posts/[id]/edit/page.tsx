@@ -1,6 +1,10 @@
 import { eq } from "drizzle-orm";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FadeIn } from "@/components/motion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
@@ -34,22 +38,26 @@ export default async function EditPostPage({
 	return (
 		<main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
 			<div className="container mx-auto px-4 py-16">
-				<div className="mb-8 flex items-center justify-between">
-					<div className="flex items-center gap-4">
-						<h1 className="font-bold text-3xl">Edit Post</h1>
-						<span className="rounded-full bg-blue-500/20 px-3 py-1 text-blue-300 text-sm">
-							Query: {queryDuration}ms
-						</span>
+				<FadeIn>
+					<div className="mb-8 flex items-center justify-between">
+						<div className="flex items-center gap-4">
+							<h1 className="font-bold text-3xl">Edit Post</h1>
+							<Badge className="bg-blue-500/20 text-blue-300">
+								Query: {queryDuration}ms
+							</Badge>
+						</div>
+						<Button asChild variant="ghost">
+							<Link href="/posts">
+								<ArrowLeft className="mr-2 h-4 w-4" />
+								Back
+							</Link>
+						</Button>
 					</div>
-					<Link
-						className="rounded-full bg-white/10 px-6 py-2 font-semibold transition hover:bg-white/20"
-						href="/posts"
-					>
-						Back
-					</Link>
-				</div>
+				</FadeIn>
 
-				<EditPostForm post={post} />
+				<FadeIn delay={0.1}>
+					<EditPostForm post={post} />
+				</FadeIn>
 			</div>
 		</main>
 	);

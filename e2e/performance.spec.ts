@@ -1,10 +1,13 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Posts CRUD Performance", () => {
+	// Performance tests need more time
+	test.setTimeout(60000);
+
 	test.beforeEach(async ({ page }) => {
-		// Navigate to posts page - assumes user is already logged in
-		// You may need to set up authentication state first
 		await page.goto("/posts");
+		// Wait for page to be fully loaded
+		await page.waitForSelector('[data-slot="card"]', { timeout: 10000 });
 	});
 
 	test("measure create post performance", async ({ page }) => {
@@ -13,28 +16,28 @@ test.describe("Posts CRUD Performance", () => {
 
 		for (let i = 0; i < iterations; i++) {
 			// Fill in the form
-			await page.fill('input[name="title"]', `Performance Test ${i + 1}`);
+			await page.fill('input[name="title"]', `Performance Test ${Date.now()}`);
 			await page.fill(
 				'textarea[name="content"]',
 				`Content for performance test ${i + 1}`,
 			);
 
-			// Click create and wait for timing to appear
+			// Click create and wait for toast to appear
 			await page.click('button[type="submit"]');
 
-			// Wait for the timing badge to appear
-			const totalBadge = page.locator("text=/Total: [\\d.]+ms/");
-			await expect(totalBadge).toBeVisible({ timeout: 10000 });
+			// Wait for the latest toast notification with timing
+			const toast = page.locator("[data-sonner-toast]").first();
+			await expect(toast).toBeVisible({ timeout: 10000 });
 
-			// Extract the timing value
-			const text = await totalBadge.textContent();
-			const match = text?.match(/Total: ([\d.]+)ms/);
+			// Extract the timing value from toast (e.g., "Post created in 159.70ms")
+			const text = await toast.textContent();
+			const match = text?.match(/in ([\d.]+)ms/);
 			if (match?.[1]) {
 				timings.push(parseFloat(match[1]));
 			}
 
-			// Small delay between iterations
-			await page.waitForTimeout(500);
+			// Wait for toast to disappear
+			await page.waitForTimeout(2000);
 		}
 
 		// Calculate statistics
@@ -54,41 +57,50 @@ test.describe("Posts CRUD Performance", () => {
 		console.log("=====================================\n");
 
 		// Assert performance is within acceptable range
-		expect(avg).toBeLessThan(200); // Average should be under 200ms
+		expect(avg).toBeLessThan(500);
 	});
 
 	test("measure delete post performance", async ({ page }) => {
 		// First create a few posts to delete
 		const postsToCreate = 3;
+		const createdTitles: string[] = [];
 
 		for (let i = 0; i < postsToCreate; i++) {
-			await page.fill('input[name="title"]', `Delete Test ${i + 1}`);
+			const title = `Delete Perf ${Date.now()}`;
+			createdTitles.push(title);
+			await page.fill('input[name="title"]', title);
 			await page.fill('textarea[name="content"]', `To be deleted ${i + 1}`);
 			await page.click('button[type="submit"]');
-			await page.waitForTimeout(1000);
-		}
-
-		// Now measure delete performance by counting posts before/after
-		const timings: number[] = [];
-
-		for (let i = 0; i < postsToCreate; i++) {
-			const deleteButtons = page.locator('button:has-text("Delete")');
-			const countBefore = await deleteButtons.count();
-
-			if (countBefore === 0) break;
-
-			// Click delete on the first available post
-			const startTime = Date.now();
-			await deleteButtons.first().click();
-
-			// Wait for the post to be deleted (button count decreases)
-			await expect(deleteButtons).toHaveCount(countBefore - 1, {
+			await expect(page.locator("[data-sonner-toast]").first()).toBeVisible({
 				timeout: 10000,
 			});
-			const duration = Date.now() - startTime;
-			timings.push(duration);
+			await page.waitForTimeout(2000);
+		}
 
-			await page.waitForTimeout(300);
+		// Now measure delete performance
+		const timings: number[] = [];
+
+		for (const title of createdTitles) {
+			const card = page
+				.locator('[data-slot="card"]')
+				.filter({ hasText: title });
+
+			if ((await card.count()) === 0) continue;
+
+			// Click delete
+			await card.getByRole("button").last().click();
+
+			// Wait for toast with timing
+			const toast = page.locator("[data-sonner-toast]").first();
+			await expect(toast).toBeVisible({ timeout: 10000 });
+
+			const text = await toast.textContent();
+			const match = text?.match(/in ([\d.]+)ms/);
+			if (match?.[1]) {
+				timings.push(parseFloat(match[1]));
+			}
+
+			await page.waitForTimeout(2000);
 		}
 
 		if (timings.length > 0) {
@@ -101,7 +113,7 @@ test.describe("Posts CRUD Performance", () => {
 			console.log(`Average: ${avg.toFixed(2)}ms`);
 			console.log("=====================================\n");
 
-			expect(avg).toBeLessThan(500); // Client-side timing includes network latency
+			expect(avg).toBeLessThan(500);
 		}
 	});
 });

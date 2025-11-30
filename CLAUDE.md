@@ -109,6 +109,28 @@ src/modules/[feature-name]/
 
 ## Development Workflow
 
+### Todo 规划规则
+
+创建功能时，**必须**按照以下模板创建 Todo 列表，不可合并或省略：
+
+```
+1. [UNDERSTAND] 理解需求
+2. [SCAFFOLD] 创建模块结构
+3. [MOCK_UI] 实现 UI（使用 mock 数据）
+4. [REVIEW_UI] UI 审查（截图等待确认）
+5. [CONNECT_DATA] 接入真实数据
+6. [REVIEW_DATA] 数据验证
+7. [POLISH] 完善细节（loading/error 状态）
+8. [VALIDATE] 编写单元测试        ← 不可省略
+9. [VALIDATE] 编写 E2E 测试       ← 不可省略（如有 UI）
+10. [VALIDATE] 运行 validate + e2e ← 不可省略
+11. [DONE] 完成
+```
+
+**重要：** [VALIDATE] 阶段必须拆分为"编写单元测试"、"编写 E2E 测试"、"运行验证"三个独立任务。
+
+---
+
 ### 页面/UI 功能状态机
 
 ```
@@ -213,10 +235,30 @@ export async function deletePost(input: unknown) {
 - **退出条件：** 所有状态都有合理处理
 
 **[VALIDATE] 质量验证**
-- 运行 `bun run validate`（typecheck + lint + test）
-- 关键业务逻辑补充 Vitest 单元测试
-- 核心用户流程补充 Playwright E2E 测试
-- **退出条件：** 所有检查通过
+
+**必须按顺序完成以下步骤（不可跳过）：**
+
+1. **编写单元测试**
+   - 为 `schemas.ts` 编写测试（验证 Zod schema 的各种边界情况）
+   - 测试文件命名：`schemas.test.ts`，放在同级目录
+   - 运行 `bun run test:run` 确保测试通过
+
+2. **编写 E2E 测试**（如有 UI 变更）
+   - 测试核心用户流程（页面加载、搜索、表单提交等）
+   - 测试文件放在 `e2e/` 目录
+   - 命名规范：`[feature].spec.ts`
+
+3. **运行完整验证**
+   ```bash
+   bun run validate  # 包含 typecheck + lint + test
+   bun run e2e       # E2E 测试
+   ```
+
+**退出条件：**
+- 所有单元测试通过
+- 所有 E2E 测试通过
+- typecheck 无错误
+- lint 无错误（scripts/ 目录的已有警告除外）
 
 **[DONE] 完成**
 
@@ -374,6 +416,7 @@ bun run knip            # Check for unused code
 - 不要一次性做太多，分步确认
 - 代码变更后主动运行 `bun run check` 和 `bun run typecheck`
 - 如果测试失败，先修复再继续
+- **功能完成前必须编写并运行测试，不可跳过**
 - 使用中文沟通，代码和注释用英文
 
 ---

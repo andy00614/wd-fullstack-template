@@ -47,39 +47,39 @@ export function SignupForm() {
 		<div className="flex w-full max-w-sm flex-col gap-4">
 			<form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
 				<div className="space-y-2">
-					<Label className="text-white" htmlFor="email">
+					<Label className="text-[#1a1a1a]" htmlFor="email">
 						Email
 					</Label>
 					<Input
 						{...register("email")}
-						className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+						className="border-gray-200 bg-white text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#C4B5FD] focus:ring-[#C4B5FD]"
 						disabled={isPending}
 						id="email"
 						placeholder="you@example.com"
 						type="email"
 					/>
 					{errors.email && (
-						<p className="text-red-400 text-sm">{errors.email.message}</p>
+						<p className="text-red-500 text-sm">{errors.email.message}</p>
 					)}
 				</div>
 				<div className="space-y-2">
-					<Label className="text-white" htmlFor="password">
+					<Label className="text-[#1a1a1a]" htmlFor="password">
 						Password
 					</Label>
 					<Input
 						{...register("password")}
-						className="border-white/20 bg-white/10 text-white placeholder:text-white/50"
+						className="border-gray-200 bg-white text-[#1a1a1a] placeholder:text-gray-400 focus:border-[#C4B5FD] focus:ring-[#C4B5FD]"
 						disabled={isPending}
 						id="password"
 						placeholder="At least 6 characters"
 						type="password"
 					/>
 					{errors.password && (
-						<p className="text-red-400 text-sm">{errors.password.message}</p>
+						<p className="text-red-500 text-sm">{errors.password.message}</p>
 					)}
 				</div>
 				<Button
-					className="bg-[hsl(280,100%,70%)] hover:bg-[hsl(280,100%,60%)]"
+					className="rounded-xl bg-black font-bold text-white transition-all hover:scale-[1.02] hover:bg-black/90"
 					disabled={isPending}
 					type="submit"
 				>

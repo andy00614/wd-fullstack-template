@@ -23,8 +23,19 @@ export default defineConfig({
 			name: "setup",
 			testMatch: /.*\.setup\.ts/,
 		},
+		// Public pages (no auth required)
+		{
+			name: "public",
+			testMatch: /prompts\.spec\.ts/,
+			use: {
+				...devices["Desktop Chrome"],
+			},
+		},
+		// Authenticated pages
 		{
 			name: "chromium",
+			testMatch: /^(?!.*prompts\.spec\.ts).*\.spec\.ts$/,
+			testIgnore: /.*\.setup\.ts/,
 			use: {
 				...devices["Desktop Chrome"],
 				storageState: "playwright/.auth/user.json",

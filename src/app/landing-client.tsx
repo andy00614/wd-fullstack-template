@@ -95,7 +95,7 @@ export function LandingClient({ user }: LandingClientProps) {
 								asChild
 								className="cursor-pointer rounded-xl bg-[#F3E8FF] px-6 py-2.5 font-bold text-[#1a1a1a] text-[15px] transition-colors hover:bg-[#e9d5ff]"
 							>
-								<Link href="/posts">Dashboard</Link>
+								<Link href="/prompts">Prompts</Link>
 							</Button>
 							<Button asChild size="sm" variant="ghost">
 								<Link href="/signout">

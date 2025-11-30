@@ -30,8 +30,8 @@ setup("authenticate", async ({ page }) => {
 		throw new Error(`Login failed: ${errorText}`);
 	}
 
-	// Wait for redirect to home page with "View Posts" link
-	await expect(page.locator('a:has-text("View Posts")')).toBeVisible({
+	// Wait for redirect to home page with "Prompts" link (shown when logged in)
+	await expect(page.locator('a:has-text("Prompts")')).toBeVisible({
 		timeout: 10000,
 	});
 

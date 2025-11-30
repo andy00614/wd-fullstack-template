@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { promptSchema, searchPromptsSchema } from "./schemas";
+import {
+	deletePromptSchema,
+	promptSchema,
+	searchPromptsSchema,
+	toggleFavoriteSchema,
+	updatePromptSchema,
+} from "./schemas";
 
 describe("promptSchema", () => {
 	it("validates a valid prompt with all fields", () => {
@@ -8,7 +14,6 @@ describe("promptSchema", () => {
 			content: "This is test content",
 			category: "Writing",
 			tags: ["test", "example"],
-			author: "Test Author",
 		});
 		expect(result.success).toBe(true);
 	});
@@ -19,22 +24,17 @@ describe("promptSchema", () => {
 			content: "This is test content",
 			category: "Writing",
 			tags: [],
-			author: "Test Author",
 		});
 		expect(result.success).toBe(true);
 	});
 
-	it("uses default empty array when tags not provided", () => {
+	it("rejects missing tags", () => {
 		const result = promptSchema.safeParse({
 			title: "Test Prompt",
 			content: "This is test content",
 			category: "Writing",
-			author: "Test Author",
 		});
-		expect(result.success).toBe(true);
-		if (result.success) {
-			expect(result.data.tags).toEqual([]);
-		}
+		expect(result.success).toBe(false);
 	});
 
 	it("rejects empty title", () => {
@@ -42,7 +42,7 @@ describe("promptSchema", () => {
 			title: "",
 			content: "This is test content",
 			category: "Writing",
-			author: "Test Author",
+			tags: [],
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
@@ -55,7 +55,7 @@ describe("promptSchema", () => {
 			title: "a".repeat(201),
 			content: "This is test content",
 			category: "Writing",
-			author: "Test Author",
+			tags: [],
 		});
 		expect(result.success).toBe(false);
 		if (!result.success) {
@@ -68,7 +68,7 @@ describe("promptSchema", () => {
 			title: "Test Prompt",
 			content: "",
 			category: "Writing",
-			author: "Test Author",
+			tags: [],
 		});
 		expect(result.success).toBe(false);
 	});
@@ -77,17 +77,66 @@ describe("promptSchema", () => {
 		const result = promptSchema.safeParse({
 			title: "Test Prompt",
 			content: "This is test content",
-			author: "Test Author",
+			tags: [],
 		});
 		expect(result.success).toBe(false);
 	});
+});
 
-	it("rejects empty author", () => {
-		const result = promptSchema.safeParse({
-			title: "Test Prompt",
-			content: "This is test content",
-			category: "Writing",
-			author: "",
+describe("updatePromptSchema", () => {
+	it("validates a valid update with all fields", () => {
+		const result = updatePromptSchema.safeParse({
+			id: "550e8400-e29b-41d4-a716-446655440000",
+			title: "Updated Prompt",
+			content: "Updated content",
+			category: "Coding",
+			tags: ["updated"],
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects invalid UUID", () => {
+		const result = updatePromptSchema.safeParse({
+			id: "invalid-id",
+			title: "Updated Prompt",
+			content: "Updated content",
+			category: "Coding",
+			tags: [],
+		});
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.error.issues[0]?.message).toBe("Invalid prompt ID");
+		}
+	});
+});
+
+describe("deletePromptSchema", () => {
+	it("validates a valid UUID", () => {
+		const result = deletePromptSchema.safeParse({
+			id: "550e8400-e29b-41d4-a716-446655440000",
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects invalid UUID", () => {
+		const result = deletePromptSchema.safeParse({
+			id: "not-a-uuid",
+		});
+		expect(result.success).toBe(false);
+	});
+});
+
+describe("toggleFavoriteSchema", () => {
+	it("validates a valid UUID", () => {
+		const result = toggleFavoriteSchema.safeParse({
+			promptId: "550e8400-e29b-41d4-a716-446655440000",
+		});
+		expect(result.success).toBe(true);
+	});
+
+	it("rejects invalid UUID", () => {
+		const result = toggleFavoriteSchema.safeParse({
+			promptId: "invalid",
 		});
 		expect(result.success).toBe(false);
 	});

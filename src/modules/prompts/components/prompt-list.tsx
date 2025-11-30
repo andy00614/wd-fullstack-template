@@ -1,11 +1,12 @@
-import type { Prompt } from "../types";
+import type { PromptWithFavorite } from "../types";
 import { PromptCard } from "./prompt-card";
 
 interface PromptListProps {
-	prompts: Prompt[];
+	prompts: PromptWithFavorite[];
+	isLoggedIn: boolean;
 }
 
-export function PromptList({ prompts }: PromptListProps) {
+export function PromptList({ prompts, isLoggedIn }: PromptListProps) {
 	if (prompts.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-20 text-center">
@@ -25,7 +26,7 @@ export function PromptList({ prompts }: PromptListProps) {
 	return (
 		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{prompts.map((prompt) => (
-				<PromptCard key={prompt.id} prompt={prompt} />
+				<PromptCard isLoggedIn={isLoggedIn} key={prompt.id} prompt={prompt} />
 			))}
 		</div>
 	);

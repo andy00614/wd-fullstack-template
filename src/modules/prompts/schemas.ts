@@ -4,8 +4,19 @@ export const promptSchema = z.object({
 	title: z.string().min(1, "Title is required").max(200, "Title too long"),
 	content: z.string().min(1, "Content is required"),
 	category: z.string().min(1, "Category is required"),
-	tags: z.array(z.string()).default([]),
-	author: z.string().min(1, "Author is required"),
+	tags: z.array(z.string()),
+});
+
+export const updatePromptSchema = promptSchema.extend({
+	id: z.string().uuid("Invalid prompt ID"),
+});
+
+export const deletePromptSchema = z.object({
+	id: z.string().uuid("Invalid prompt ID"),
+});
+
+export const toggleFavoriteSchema = z.object({
+	promptId: z.string().uuid("Invalid prompt ID"),
 });
 
 export const searchPromptsSchema = z.object({
@@ -16,4 +27,7 @@ export const searchPromptsSchema = z.object({
 });
 
 export type PromptFormData = z.infer<typeof promptSchema>;
+export type UpdatePromptInput = z.infer<typeof updatePromptSchema>;
+export type DeletePromptInput = z.infer<typeof deletePromptSchema>;
+export type ToggleFavoriteInput = z.infer<typeof toggleFavoriteSchema>;
 export type SearchPromptsInput = z.input<typeof searchPromptsSchema>;

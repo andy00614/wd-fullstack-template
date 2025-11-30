@@ -1,8 +1,14 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart, Plus, User } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { getPrompts, PromptList, PromptSearch } from "@/modules/prompts";
+import { createClient } from "@/lib/supabase/server";
+import {
+	getPrompts,
+	getUserFavorites,
+	PromptList,
+	PromptSearch,
+} from "@/modules/prompts";
 
 interface PromptsPageProps {
 	searchParams: Promise<{ q?: string; category?: string }>;
@@ -13,10 +19,18 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 	const query = params.q || "";
 	const category = params.category || "";
 
-	const prompts = await getPrompts({
-		query: query || undefined,
-		category: category || undefined,
-	});
+	const supabase = await createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	const [prompts, favoriteIds] = await Promise.all([
+		getPrompts({
+			query: query || undefined,
+			category: category || undefined,
+		}),
+		getUserFavorites(),
+	]);
 
 	return (
 		<main className="min-h-screen bg-white">
@@ -30,16 +44,54 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 						<span className="font-black text-2xl">WD</span>
 						<span className="font-medium text-gray-400">Template</span>
 					</Link>
-					<Button
-						asChild
-						className="text-gray-500 hover:text-[#1a1a1a]"
-						variant="ghost"
-					>
-						<Link href="/">
-							<ArrowLeft className="mr-2 h-4 w-4" />
-							Back to home
-						</Link>
-					</Button>
+					<div className="flex items-center gap-2">
+						{user ? (
+							<>
+								<Button
+									asChild
+									className="text-gray-500 hover:text-[#1a1a1a]"
+									size="sm"
+									variant="ghost"
+								>
+									<Link href="/prompts/my">
+										<User className="mr-2 h-4 w-4" />
+										My Prompts
+									</Link>
+								</Button>
+								<Button
+									asChild
+									className="text-gray-500 hover:text-[#1a1a1a]"
+									size="sm"
+									variant="ghost"
+								>
+									<Link href="/prompts/favorites">
+										<Heart className="mr-2 h-4 w-4" />
+										Favorites
+									</Link>
+								</Button>
+								<Button asChild size="sm">
+									<Link href="/prompts/new">
+										<Plus className="mr-2 h-4 w-4" />
+										New Prompt
+									</Link>
+								</Button>
+							</>
+						) : (
+							<Button asChild size="sm" variant="outline">
+								<Link href="/login">Log in to create</Link>
+							</Button>
+						)}
+						<Button
+							asChild
+							className="text-gray-500 hover:text-[#1a1a1a]"
+							variant="ghost"
+						>
+							<Link href="/">
+								<ArrowLeft className="mr-2 h-4 w-4" />
+								Back to home
+							</Link>
+						</Button>
+					</div>
 				</div>
 			</div>
 
@@ -83,7 +135,12 @@ export default async function PromptsPage({ searchParams }: PromptsPageProps) {
 				</div>
 
 				{/* Prompt grid */}
-				<PromptList prompts={prompts} />
+				<PromptList
+					currentUserId={user?.id}
+					favoriteIds={favoriteIds}
+					isLoggedIn={!!user}
+					prompts={prompts}
+				/>
 			</div>
 		</main>
 	);

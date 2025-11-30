@@ -1,13 +1,20 @@
 "use client";
 
-import { Check, Copy, Heart } from "lucide-react";
-import { useState } from "react";
+import { Check, Copy, Edit, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { deletePrompt } from "../actions";
 import type { Prompt } from "../types";
+import { FavoriteButton } from "./favorite-button";
 
 interface PromptCardProps {
 	prompt: Prompt;
+	currentUserId?: string;
+	isFavorited?: boolean;
+	isLoggedIn?: boolean;
 }
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
@@ -20,10 +27,19 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 	Default: { bg: "bg-gray-100", text: "text-gray-600" },
 };
 
-export function PromptCard({ prompt }: PromptCardProps) {
+export function PromptCard({
+	prompt,
+	currentUserId,
+	isFavorited = false,
+	isLoggedIn = false,
+}: PromptCardProps) {
+	const router = useRouter();
 	const [copied, setCopied] = useState(false);
+	const [isDeleting, startDeleteTransition] = useTransition();
 	const colors = categoryColors[prompt.category] ??
 		categoryColors.Default ?? { bg: "bg-gray-100", text: "text-gray-600" };
+
+	const isOwner = currentUserId && prompt.userId === currentUserId;
 
 	async function handleCopy() {
 		await navigator.clipboard.writeText(prompt.content);
@@ -32,19 +48,39 @@ export function PromptCard({ prompt }: PromptCardProps) {
 		setTimeout(() => setCopied(false), 2000);
 	}
 
+	function handleDelete() {
+		if (!confirm("Are you sure you want to delete this prompt?")) {
+			return;
+		}
+
+		startDeleteTransition(async () => {
+			try {
+				await deletePrompt({ id: prompt.id });
+				toast.success("Prompt deleted successfully");
+				router.refresh();
+			} catch (error) {
+				toast.error(
+					error instanceof Error ? error.message : "Failed to delete prompt",
+				);
+			}
+		});
+	}
+
 	return (
 		<div className="group relative flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:border-[#C4B5FD] hover:shadow-lg">
-			{/* Category badge */}
+			{/* Category badge and favorite */}
 			<div className="mb-4 flex items-center justify-between">
 				<span
 					className={`rounded-full px-3 py-1 font-medium text-xs ${colors.bg} ${colors.text}`}
 				>
 					{prompt.category}
 				</span>
-				<div className="flex items-center gap-1 text-gray-400">
-					<Heart className="h-4 w-4" />
-					<span className="text-sm">{prompt.favoritesCount}</span>
-				</div>
+				<FavoriteButton
+					initialCount={prompt.favoritesCount}
+					initialFavorited={isFavorited}
+					isLoggedIn={isLoggedIn}
+					promptId={prompt.id}
+				/>
 			</div>
 
 			{/* Title */}
@@ -77,24 +113,49 @@ export function PromptCard({ prompt }: PromptCardProps) {
 			{/* Footer */}
 			<div className="flex items-center justify-between border-gray-50 border-t pt-4">
 				<span className="text-gray-400 text-sm">by {prompt.author}</span>
-				<Button
-					className="rounded-lg bg-[#F3E8FF] text-[#6D28D9] transition-colors hover:bg-[#E9D5FF]"
-					onClick={handleCopy}
-					size="sm"
-					variant="ghost"
-				>
-					{copied ? (
+				<div className="flex items-center gap-2">
+					{isOwner && (
 						<>
-							<Check className="mr-1 h-4 w-4" />
-							Copied
-						</>
-					) : (
-						<>
-							<Copy className="mr-1 h-4 w-4" />
-							Copy
+							<Button
+								asChild
+								className="text-gray-500 hover:text-[#1a1a1a]"
+								size="sm"
+								variant="ghost"
+							>
+								<Link href={`/prompts/${prompt.id}/edit`}>
+									<Edit className="h-4 w-4" />
+								</Link>
+							</Button>
+							<Button
+								className="text-gray-500 hover:text-red-500"
+								disabled={isDeleting}
+								onClick={handleDelete}
+								size="sm"
+								variant="ghost"
+							>
+								<Trash2 className="h-4 w-4" />
+							</Button>
 						</>
 					)}
-				</Button>
+					<Button
+						className="rounded-lg bg-[#F3E8FF] text-[#6D28D9] transition-colors hover:bg-[#E9D5FF]"
+						onClick={handleCopy}
+						size="sm"
+						variant="ghost"
+					>
+						{copied ? (
+							<>
+								<Check className="mr-1 h-4 w-4" />
+								Copied
+							</>
+						) : (
+							<>
+								<Copy className="mr-1 h-4 w-4" />
+								Copy
+							</>
+						)}
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

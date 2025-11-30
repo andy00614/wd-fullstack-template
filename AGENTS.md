@@ -14,6 +14,31 @@
 
 ---
 
+## MCP Tools
+
+项目配置了以下 MCP servers，优先使用这些工具：
+
+| Tool | 用途 | 何时使用 |
+|------|------|---------|
+| **Supabase MCP** | 数据库操作、schema 管理、查看 logs | 需要查询/修改数据库时，优先于 `db:query` 脚本 |
+| **Context7** | 获取最新库文档 | 使用 Next.js/React/Tailwind 等 API 时，加 "use context7" 获取最新文档 |
+| **Puppeteer MCP** | 浏览器自动化、截图、交互测试 | 需要验证 UI、填表测试、复杂截图时 |
+
+### 使用示例
+
+```
+# 查询数据库 - 用 Supabase MCP
+"查看 posts 表的数据"
+
+# 获取最新文档 - 用 Context7
+"use context7, Next.js 15 的 useSearchParams 怎么用"
+
+# UI 验证 - 用 Puppeteer MCP
+"打开 localhost:3000/posts 并截图"
+```
+
+---
+
 ## Project Structure
 
 ```
@@ -58,65 +83,101 @@ src/modules/[feature-name]/
 
 ## Development Workflow
 
-### 页面/UI 功能需求，严格遵循以下步骤：
+### 页面/UI 功能状态机
 
-**Step 1: 理解需求**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    WORKFLOW STATE MACHINE                   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [UNDERSTAND] ◄──────────────────────────────────┐          │
+│    │ 确认需求、设计稿、边界                        │          │
+│    ▼                                              │          │
+│  [SCAFFOLD]                                       │          │
+│    │ 创建模块结构                                 │          │
+│    ▼                                              │          │
+│  [MOCK_UI] ◄──────────────────────┐              │          │
+│    │ 用 mock 数据完成 UI          │              │          │
+│    ▼                              │              │          │
+│  [REVIEW_UI]                      │              │          │
+│    │ 截图/预览 → 等待用户确认      │              │          │
+│    │ ❌ UI 不满意 ────────────────┘              │          │
+│    ▼ ✅ 确认                                     │          │
+│  [CONNECT_DATA]                                  │          │
+│    │ 写 Server Action，接入真实数据              │          │
+│    ▼                                             │          │
+│  [REVIEW_DATA]                                   │          │
+│    │ 验证数据流是否正确                           │          │
+│    │ ❌ 数据结构问题 ────────────────────────────┘          │
+│    ▼ ✅ 确认                                                │
+│  [POLISH]                                                   │
+│    │ loading/error 状态、边界处理                            │
+│    ▼                                                        │
+│  [VALIDATE]                                                 │
+│    │ typecheck + lint + test                                │
+│    ▼                                                        │
+│  [DONE]                                                     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 各阶段详细说明
+
+**[UNDERSTAND] 理解需求**
 - 确认功能核心目的
-- 询问是否有设计稿/参考页面
+- 询问是否有设计稿/参考页面（可用 Figma MCP 直接读取）
 - 明确关键交互和边界情况
+- **退出条件：** 用户确认需求理解正确
 
-**Step 2: 先写页面 + Mock 数据**
-- 在 `src/app/` 创建页面
+**[SCAFFOLD] 创建结构**
+- 在 `src/app/` 创建页面文件
+- 在 `src/modules/[feature]/` 创建模块结构
+- **退出条件：** 文件结构创建完成
+
+**[MOCK_UI] 实现 UI**
 - 使用 Mock 数据填充 UI
+- 如果不确定 API 用法，用 Context7 查最新文档
 - **不要先写后端接口**
+- **退出条件：** UI 可以在浏览器中预览
 
 ```typescript
-// ✅ 正确：先用 Mock
+// Mock 数据示例
 const mockData = [
   { id: '1', title: 'Example', status: 'active' }
 ]
-
-export default function ExamplePage() {
-  const data = mockData // 后面替换为真实数据
-  return <DataList data={data} />
-}
 ```
 
-**Step 3: 等待用户确认**
-- 完成页面后，告知用户："页面已完成，请查看 http://localhost:3000/xxx 确认 UI 是否符合预期"
-- **等待用户反馈再继续下一步**
+**[REVIEW_UI] UI 审查**
+- 用 Puppeteer MCP 截图，或告知用户查看页面
+- **等待用户反馈**
+- ❌ 不满意 → 回到 [MOCK_UI]
+- ✅ 确认 → 进入 [CONNECT_DATA]
 
-**Step 4: 用户确认后，写 Server Action**
-- 在 `src/modules/[feature]/actions/` 创建
-- 从页面组件推导出需要的数据结构
+**[CONNECT_DATA] 接入数据**
+- 用 Supabase MCP 查看现有表结构和数据
+- 在 `src/modules/[feature]/actions/` 创建 Server Action
 - 使用 Zod 验证输入
+- **退出条件：** Server Action 创建完成，数据可以读写
 
-```typescript
-// src/modules/example/actions/index.ts
-'use server'
+**[REVIEW_DATA] 数据验证**
+- 用 Supabase MCP 验证数据是否正确写入
+- 检查数据流是否符合预期
+- ❌ 数据结构问题 → 回到 [UNDERSTAND] 重新理解需求
+- ✅ 确认 → 进入 [POLISH]
 
-import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
-
-const InputSchema = z.object({
-  title: z.string().min(1),
-})
-
-export async function createExample(input: z.infer<typeof InputSchema>) {
-  const validated = InputSchema.parse(input)
-  const supabase = await createClient()
-  // ... 数据库操作
-}
-```
-
-**Step 5: 替换 Mock 为真实数据**
-- 更新页面组件使用真实接口
+**[POLISH] 完善细节**
 - 添加 loading 状态
 - 添加 error 处理
+- 处理边界情况
+- **退出条件：** 所有状态都有合理处理
 
-**Step 6: 稳定后补充测试**
-- 关键业务逻辑 → Vitest 单元测试
-- 核心用户流程 → Playwright E2E 测试
+**[VALIDATE] 质量验证**
+- 运行 `bun run validate`（typecheck + lint + test）
+- 关键业务逻辑补充 Vitest 单元测试
+- 核心用户流程补充 Playwright E2E 测试
+- **退出条件：** 所有检查通过
+
+**[DONE] 完成**
 
 ---
 

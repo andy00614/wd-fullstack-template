@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { createClient } from "@/lib/supabase/server";
+import { deletePostSchema } from "../schemas";
 
 async function getAuthUser() {
 	const supabase = await createClient();
@@ -75,12 +76,16 @@ export async function updatePost(formData: FormData) {
 export async function deletePost(formData: FormData) {
 	const start = performance.now();
 	await getAuthUser();
-	const id = formData.get("id") as string;
 
-	await db.delete(posts).where(eq(posts.id, id));
+	const rawId = formData.get("id");
+	const validated = deletePostSchema.parse({ id: rawId });
+
+	await db.delete(posts).where(eq(posts.id, validated.id));
 
 	const duration = performance.now() - start;
-	console.log(`[DELETE] Post ${id} deleted in ${duration.toFixed(2)}ms`);
+	console.log(
+		`[DELETE] Post ${validated.id} deleted in ${duration.toFixed(2)}ms`,
+	);
 
 	revalidatePath("/posts");
 	return { duration: duration.toFixed(2) };

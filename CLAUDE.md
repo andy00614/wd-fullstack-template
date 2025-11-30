@@ -16,13 +16,29 @@
 
 ## MCP Tools
 
-项目配置了以下 MCP servers，优先使用这些工具：
+项目配置了以下 MCP servers，**优先使用这些工具**：
 
 | Tool | 用途 | 何时使用 |
 |------|------|---------|
 | **Supabase MCP** | 数据库操作、schema 管理、查看 logs | 需要查询/修改数据库时，优先于 `db:query` 脚本 |
 | **Context7** | 获取最新库文档 | 使用 Next.js/React/Tailwind 等 API 时，加 "use context7" 获取最新文档 |
 | **Puppeteer MCP** | 浏览器自动化、截图、交互测试 | 需要验证 UI、填表测试、复杂截图时 |
+
+### 工作流中的 MCP 使用规则
+
+| 工作流阶段 | MCP 工具 | 自动触发条件 |
+|-----------|---------|-------------|
+| [MOCK_UI] | **Context7** | 不确定 API/组件用法时，主动查询最新文档 |
+| [REVIEW_UI] | **Puppeteer** | 完成 UI 后，自动截图供用户确认 |
+| [CONNECT_DATA] | **Supabase** | 写 Server Action 前，先查表结构和现有数据 |
+| [REVIEW_DATA] | **Supabase** | 验证数据是否正确写入数据库 |
+
+### MCP 优先级规则
+
+1. **数据库操作**：Supabase MCP > `bun run db:query`
+2. **文档查询**：Context7 MCP > 内置知识
+3. **UI 验证**：Puppeteer MCP > `bun run screenshot`
+4. **降级处理**：如果 MCP 不可用，自动使用对应的 CLI 命令
 
 ### 使用示例
 
@@ -35,6 +51,16 @@
 
 # UI 验证 - 用 Puppeteer MCP
 "打开 localhost:3000/posts 并截图"
+```
+
+### 添加 MCP 服务器
+
+```bash
+# 查看可用预设
+bun run mcp
+
+# 使用 Claude CLI 添加（推荐 HTTP 方式）
+claude mcp add --transport http <name> <url> --header "KEY: value"
 ```
 
 ---
@@ -156,8 +182,23 @@ const mockData = [
 **[CONNECT_DATA] 接入数据**
 - 用 Supabase MCP 查看现有表结构和数据
 - 在 `src/modules/[feature]/actions/` 创建 Server Action
-- 使用 Zod 验证输入
+- **必须：** 先在 `schemas.ts` 定义 Zod schema，再在 action 中使用
+- **必须：** 使用 `lib/supabase/server.ts` 进行数据库操作
 - **退出条件：** Server Action 创建完成，数据可以读写
+
+```typescript
+// [CONNECT_DATA] 标准流程
+// 1. 先定义 schema (schemas.ts)
+export const deletePostSchema = z.object({
+  id: z.string().uuid("Invalid post ID"),
+});
+
+// 2. 在 action 中验证 (actions/index.ts)
+export async function deletePost(input: unknown) {
+  const validated = deletePostSchema.parse(input);
+  // ... 执行操作
+}
+```
 
 **[REVIEW_DATA] 数据验证**
 - 用 Supabase MCP 验证数据是否正确写入

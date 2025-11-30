@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Nunito } from "next/font/google";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
@@ -10,16 +10,16 @@ export const metadata: Metadata = {
 	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const nunito = Nunito({
 	subsets: ["latin"],
-	variable: "--font-geist-sans",
+	variable: "--font-nunito",
 });
 
 export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html className={`${geist.variable}`} lang="en">
+		<html className={`${nunito.variable}`} lang="en">
 			<body>
 				<Providers>{children}</Providers>
 			</body>

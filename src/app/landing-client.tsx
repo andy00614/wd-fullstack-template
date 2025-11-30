@@ -113,7 +113,7 @@ export function LandingClient({ user }: LandingClientProps) {
 				<div className="relative z-10 mx-auto max-w-5xl text-center">
 					<motion.h1
 						animate={{ opacity: 1, y: 0 }}
-						className="font-bold text-5xl text-[#1a1a1a] leading-[1.1] tracking-tight md:text-7xl lg:text-8xl"
+						className="font-bold text-4xl text-[#1a1a1a] leading-[1.1] tracking-tight md:text-6xl lg:text-7xl"
 						initial={{ opacity: 0, y: 20 }}
 						transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
 					>

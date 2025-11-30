@@ -5,6 +5,7 @@ export interface Prompt {
 	category: string;
 	tags: string[];
 	author: string;
+	userId: string;
 	favoritesCount: number;
 	createdAt: Date;
 	updatedAt: Date;

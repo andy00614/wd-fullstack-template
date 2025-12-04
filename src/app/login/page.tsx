@@ -20,8 +20,8 @@ export default async function LoginPage() {
 	return (
 		<main className="flex min-h-screen w-full bg-white text-[#1a1a1a] selection:bg-[#C4B5FD]/30">
 			{/* Left Panel - Brand & Character */}
-			<div className="hidden w-1/2 flex-col items-center justify-center bg-[#F3E8FF] p-12 lg:flex">
-				<div className="relative flex flex-col items-center">
+			<div className="relative hidden w-[55%] flex-col items-center justify-center bg-[#F3E8FF] p-12 lg:flex">
+				<div className="relative z-10 flex flex-col items-center">
 					<div className="mb-12">
 						<EyeCharacter
 							className="scale-125 shadow-2xl"
@@ -48,10 +48,22 @@ export default async function LoginPage() {
 					<div className="-top-20 -left-20 pointer-events-none absolute h-64 w-64 rounded-full bg-[#C4B5FD] opacity-20 blur-3xl" />
 					<div className="-right-20 -bottom-20 pointer-events-none absolute h-64 w-64 rounded-full bg-[#FDE047] opacity-20 blur-3xl" />
 				</div>
+
+				{/* Curved Separator */}
+				<div className="absolute top-0 right-0 bottom-0 z-20 h-full w-32 translate-x-[99%] overflow-hidden">
+					<svg
+						aria-hidden="true"
+						className="h-full w-full"
+						preserveAspectRatio="none"
+						viewBox="0 0 100 100"
+					>
+						<path d="M0 0 C 50 0 50 100 0 100 Z" fill="#F3E8FF" />
+					</svg>
+				</div>
 			</div>
 
 			{/* Right Panel - Login Form */}
-			<div className="flex w-full flex-col items-center justify-center px-4 py-12 lg:w-1/2">
+			<div className="flex w-full flex-col items-center justify-center px-4 py-12 lg:w-[45%]">
 				<div className="w-full max-w-sm">
 					<FadeIn>
 						<Link

@@ -1,0 +1,16 @@
+{
+  "name": "WD Fullstack Template",
+  "short_name": "WD Template",
+  "description": "Build faster with state machine driven workflows, enforced standards, and built-in validation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

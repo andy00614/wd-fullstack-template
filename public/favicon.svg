@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Body -->
+  <rect x="2" y="2" width="28" height="28" rx="8" ry="8" fill="#FFD56B"/>
+
+  <!-- Left Eye -->
+  <circle cx="11" cy="13" r="5" fill="white"/>
+  <circle cx="11" cy="13" r="2" fill="#1a1a1a"/>
+
+  <!-- Right Eye -->
+  <circle cx="21" cy="13" r="5" fill="white"/>
+  <circle cx="21" cy="13" r="2" fill="#1a1a1a"/>
+
+  <!-- Mouth/Beak -->
+  <ellipse cx="16" cy="23" rx="4" ry="2" fill="#FB923C" opacity="0.9"/>
+</svg>

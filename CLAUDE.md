@@ -65,6 +65,64 @@ claude mcp add --transport http <name> <url> --header "KEY: value"
 
 ---
 
+## Skills
+
+项目配置了一套 Claude Code Skills，**会根据任务上下文自动加载**。
+
+### 已安装的 Skills
+
+| Skill | 来源 | 自动触发场景 |
+|-------|------|-------------|
+| **frontend-design** | Anthropic 官方 | 设计 UI、创建页面、构建组件时 |
+| **systematic-debugging** | obra/superpowers | 遇到 bug、测试失败、异常行为时 |
+| **test-driven-development** | obra/superpowers | 实现新功能、修复 bug 时 |
+| **verification-before-completion** | obra/superpowers | 完成任务、准备提交时 |
+| **api-design** | 社区最佳实践 | 设计 Server Action、API 时 |
+| **webapp-testing** | Anthropic 官方 | 编写 E2E 测试、UI 验证时 |
+| **explaining-code** | Anthropic 官方 | 解释代码、回答"这是怎么工作的"时 |
+| **mcp-builder** | Anthropic 官方 | 构建 MCP 服务器时 |
+| **create-module** | 项目定制 | 创建新功能模块时 |
+| **db-migration** | 项目定制 | 修改数据库 schema 时 |
+| **supabase-patterns** | 项目定制 | 使用 Supabase 功能时 |
+
+### Skills 工作原理
+
+1. **自动加载**：根据任务描述自动激活相关 skill
+2. **渐进披露**：只加载需要的内容，不浪费上下文
+3. **无需手动调用**：直接描述任务，Claude 会自动使用合适的 skill
+
+### Skills 与工作流的对应
+
+| 工作流阶段 | 自动激活的 Skill |
+|-----------|-----------------|
+| [MOCK_UI] | `frontend-design` |
+| [CONNECT_DATA] | `api-design`, `supabase-patterns` |
+| [VALIDATE] | `test-driven-development`, `webapp-testing` |
+| 遇到 bug | `systematic-debugging` |
+| 提交前 | `verification-before-completion` |
+
+### 添加新 Skill
+
+在 `.claude/skills/` 目录创建 `.md` 文件：
+
+```markdown
+---
+name: my-skill
+description: 描述这个 skill 做什么，什么时候使用
+---
+
+# My Skill
+
+具体指令和模式...
+```
+
+参考资源：
+- [anthropics/skills](https://github.com/anthropics/skills) - 官方 skills
+- [obra/superpowers](https://github.com/obra/superpowers) - 社区顶级 skills
+- [awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) - skills 索引
+
+---
+
 ## Project Structure
 
 ```

@@ -1,5 +1,13 @@
 # Project: WD Fullstack Template
 
+## Auto-Activate Skills
+
+| Skill | Trigger | Action |
+|-------|---------|--------|
+| **english-coach** | User writes in English (not code) | MUST invoke `/english-coach` skill, provide feedback, sync to Notion |
+
+---
+
 ## Tech Stack
 
 - Next.js 15 + React 19 + TypeScript

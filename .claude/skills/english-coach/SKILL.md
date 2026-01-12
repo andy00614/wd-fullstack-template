@@ -1,6 +1,6 @@
 ---
 name: english-coach
-description: Analyze user's English input and provide feedback to help improve from B1 to C1 level. Activates automatically when user writes in English.
+description: Analyze user's English input and provide feedback to help improve from B1 to C1 level. **Activates automatically when user writes in English.**
 ---
 
 # English Coach (B1 → C1)

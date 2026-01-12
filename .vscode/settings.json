@@ -30,5 +30,8 @@
 	],
 	"files.associations": {
 		"*.css": "tailwindcss"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
 	}
 }
